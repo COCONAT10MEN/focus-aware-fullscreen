@@ -28,7 +28,7 @@ https://github.com/COCONAT10MEN/focus-aware-fullscreen
 ```
 
 Restart the shell when asked. On first start the plugin patches the bar and
-reloads the shell once by itself.
+restarts the shell once by itself.
 
 Requires `python3` (preinstalled on almost every distro).
 
@@ -40,7 +40,9 @@ Caelestia's plugin API has no hook for when the bar hides, so `main.qml` runs
 running shell. It is idempotent:
 
 - already patched → does nothing;
-- a Caelestia update replaced the file → patches it again and reloads the shell once;
+- a Caelestia update replaced the file → patches it again and restarts the shell once
+  (through its `caelestia-shell` systemd service; Quickshell's in-process reload
+  can deadlock on current Caelestia and does not start plugins again);
 - an update changed the code so the patch no longer fits → touches nothing and
   shows a toast saying the plugin needs updating.
 

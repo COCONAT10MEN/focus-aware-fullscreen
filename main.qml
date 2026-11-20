@@ -6,17 +6,23 @@ import qs.services
 
 // Keeps services/Kwin.qml patched so the bar only hides for the window that
 // actually has focus. Runs on every shell start; after a Caelestia update
-// replaces the file, it patches it again and reloads the shell once.
+// replaces the file, it patches it again and restarts the shell once.
 Scope {
     id: root
 
     readonly property string pluginDir: decodeURIComponent(Qt.resolvedUrl(".").toString().replace(/^file:\/\//, "")).replace(/\/$/, "")
 
+    // Restart the shell process (via its systemd service) instead of an
+    // in-process reload, which can deadlock and does not restart plugins.
+    function restartShell(): void {
+        Quickshell.execDetached(["sh", root.pluginDir + "/restart-shell.sh", Quickshell.shellPath("shell.qml")]);
+    }
+
     function handle(output: string): void {
         const result = output.trim();
         if (result === "PATCHED") {
-            console.info("[focus-aware-fullscreen] patched Kwin.qml, reloading shell");
-            Quickshell.reload(false);
+            console.info("[focus-aware-fullscreen] patched Kwin.qml, restarting the shell");
+            root.restartShell();
         } else if (result === "OK") {
             console.info("[focus-aware-fullscreen] patch already in place");
         } else {
