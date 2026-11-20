@@ -1,5 +1,9 @@
 # Focus-aware Fullscreen
 
+> ✅ **Tested and working on Caelestia KDE 2.7.5.**
+> Other versions may work too; if an update changes the code this plugin hooks
+> into, it switches itself off safely and a notification tells you.
+
 A [Caelestia](https://github.com/caelestia-kde) plugin that fixes the bar
 disappearing when you are *not* in a fullscreen app.
 
@@ -21,7 +25,7 @@ stays hidden, even though the window you are using is not fullscreen.
 
 ## Install
 
-Nexus → Plugins → install from URL, paste:
+Settings → Plugins → install from URL, paste:
 
 ```
 https://github.com/COCONAT10MEN/focus-aware-fullscreen
