@@ -1,0 +1,20 @@
+{
+  "id": "focus-aware-fullscreen",
+  "name": "Focus-aware Fullscreen",
+  "description": "Hides the bar only when the focused window is fullscreen, not whenever a fullscreen window sits behind the one you are using. Re-applies itself after Caelestia updates.",
+  "icon": "fullscreen_exit",
+  "version": "2.0.0",
+  "type": "quickshell",
+  "ui": "main.qml",
+  "author": {
+    "name": "COCONAT10MEN",
+    "url": "https://github.com/COCONAT10MEN/focus-aware-fullscreen"
+  },
+  "license": "MIT",
+  "keywords": [
+    "fullscreen",
+    "bar",
+    "focus",
+    "taskbar"
+  ]
+}
