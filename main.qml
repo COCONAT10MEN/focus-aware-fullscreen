@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Io
 import Caelestia
 import qs.services
+import "updater"
 
 // Keeps services/Kwin.qml patched so the bar only hides for the window that
 // actually has focus. Runs on every shell start; after a Caelestia update
@@ -72,5 +73,10 @@ Scope {
 
         path: root.pluginDir + "/icon.svg"
         printErrors: false
+    }
+
+    // Opt-in updates: asks before changing anything (see updater/update.sh).
+    Updater {
+        pluginDir: root.pluginDir
     }
 }

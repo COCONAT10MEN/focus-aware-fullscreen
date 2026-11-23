@@ -3,7 +3,9 @@
   "name": "Focus-aware Fullscreen",
   "description": "Hides the bar only when the focused window is fullscreen, not whenever a fullscreen window sits behind the one you are using. Re-applies itself after Caelestia updates.",
   "icon": "icon.svg",
-  "version": "2.2.0",
+  "version": "2.3.0",
+  "repository": "https://github.com/COCONAT10MEN/focus-aware-fullscreen",
+  "caelestiaTested": "2.7.5",
   "type": "quickshell",
   "ui": "main.qml",
   "author": {
