@@ -8,9 +8,13 @@ services/Kwin.qml. It is idempotent: the plugin runs it on every shell start,
 so a Caelestia update that replaces Kwin.qml simply gets patched again.
 
 Usage:
-    patch.py apply  <shell dir>   -> prints OK | PATCHED | FAILED: <reason>
+    patch.py apply  <shell dir>   -> prints OK | PATCHED | NOT_NEEDED | FAILED: <reason>
     patch.py revert <shell dir>   -> prints REVERTED | NOTHING
-    patch.py status <shell dir>   -> prints APPLIED | OUTDATED | MISSING
+    patch.py status <shell dir>   -> prints APPLIED | OUTDATED | MISSING | NOT_NEEDED
+
+Caelestia 2.7.6 and newer hide the bar by the topmost window on each screen
+(the compositor's fullscreenOutputs), which already does what this plugin is
+for. There the patcher removes any old block and reports NOT_NEEDED.
 """
 
 import os
@@ -99,6 +103,11 @@ def strip(text: str) -> str:
     return BLOCK_RE.sub("", text)
 
 
+def built_in(text: str) -> bool:
+    """Caelestia already hides the bar only for the window on top (2.7.6+)."""
+    return "KWinActiveWindowBridge.fullscreenOutputs" in text
+
+
 def patched(text: str) -> str:
     out = text
     for anchor, body in INSERTIONS:
@@ -142,7 +151,10 @@ def main() -> int:
     clean = strip(text)
 
     if action == "status":
-        print("APPLIED" if has_current else ("OUTDATED" if has_any else "MISSING"))
+        if built_in(clean) and not has_any:
+            print("NOT_NEEDED")
+        else:
+            print("APPLIED" if has_current else ("OUTDATED" if has_any else "MISSING"))
         return 0
 
     if action == "revert":
@@ -154,6 +166,13 @@ def main() -> int:
         return 0
 
     # apply
+    if built_in(clean):
+        if has_any:
+            write_atomic(path, clean)
+            print("PATCHED")
+        else:
+            print("NOT_NEEDED")
+        return 0
     try:
         want = patched(clean)
     except ValueError as e:

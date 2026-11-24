@@ -4,15 +4,15 @@
 
 # focus-aware-fullscreen
 
-[![Caelestia KDE](https://img.shields.io/badge/Caelestia_KDE-2.7.5_tested-9bd0cc?style=for-the-badge&labelColor=101418)](https://github.com/caelestia-kde/caelestia)
+[![Caelestia KDE](https://img.shields.io/badge/Caelestia_KDE-2.7.6_tested-9bd0cc?style=for-the-badge&labelColor=101418)](https://github.com/caelestia-kde/caelestia)
 [![KDE Plasma](https://img.shields.io/badge/Plasma_6-1D99F3?logo=kde&logoColor=white&style=for-the-badge&labelColor=101418)](https://kde.org/plasma-desktop)
-[![Version](https://img.shields.io/badge/Version-2.3.0-9bd0cc?style=for-the-badge&labelColor=101418)](metadata.json)
+[![Version](https://img.shields.io/badge/Version-2.4.0-9bd0cc?style=for-the-badge&labelColor=101418)](metadata.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-9bd0cc?style=for-the-badge&labelColor=101418)](LICENSE)
 
 </div>
 
 > [!NOTE]
-> **Tested and working on Caelestia KDE 2.7.5.** Other versions may work too: if an
+> **Tested and working on Caelestia KDE 2.7.6 (and 2.7.5).** Other versions may work too: if an
 > update changes the code this plugin hooks into, it switches itself off safely and a
 > notification tells you.
 
@@ -23,9 +23,12 @@ Stock Caelestia hides the bar whenever **any** fullscreen window is on a screen.
 Alt+Tab from a fullscreen game or video to a normal window and the bar stays hidden,
 even though the window you are using is not fullscreen.
 
+Good news: Caelestia 2.7.6 fixed this itself. On 2.7.6 and newer the plugin notices and stays
+out of the way, so you can keep it installed or remove it, either is fine.
+
 ## Installation
 
-**Requirements:** Caelestia KDE (tested on 2.7.5), `python3`
+**Requirements:** Caelestia KDE (tested on 2.7.5 and 2.7.6), `python3`
 
 Grab the zip from the [latest release](https://github.com/COCONAT10MEN/focus-aware-fullscreen/releases/latest), unzip it and double-click
 **Install** inside. That's it. Older versions are on the [Releases](https://github.com/COCONAT10MEN/focus-aware-fullscreen/releases) page too.

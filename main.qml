@@ -26,9 +26,13 @@ Scope {
             root.restartShell();
         } else if (result === "OK") {
             console.info("[focus-aware-fullscreen] patch already in place");
+        } else if (result === "NOT_NEEDED") {
+            // Caelestia 2.7.6+ already hides the bar only for the window on top.
+            console.info("[focus-aware-fullscreen] built into this Caelestia, nothing to patch");
         } else {
             console.warn("[focus-aware-fullscreen] " + result);
-            Toaster.toast(qsTr("Focus-aware fullscreen"), qsTr("Could not patch the bar after an update: %1").arg(result), "warning");
+            Toaster.toast(qsTr("Focus-aware fullscreen"), qsTr("Caelestia changed in its last update, so this is off for now. Checking for a fix..."), "warning");
+            updater.checkNow();
         }
     }
 
@@ -77,6 +81,8 @@ Scope {
 
     // Opt-in updates: asks before changing anything (see updater/update.sh).
     Updater {
+        id: updater
+
         pluginDir: root.pluginDir
     }
 }
