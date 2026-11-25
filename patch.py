@@ -22,6 +22,12 @@ import re
 import sys
 import tempfile
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import heal  # noqa: E402  (self-repair when Caelestia changes a little)
+
+REL = os.path.join("services", "Kwin.qml")
+
 VERSION = "2"
 TAG = "focus-aware-fullscreen"
 BEGIN = f"// {TAG}:begin v{VERSION}"
@@ -108,15 +114,30 @@ def built_in(text: str) -> bool:
     return "KWinActiveWindowBridge.fullscreenOutputs" in text
 
 
-def patched(text: str) -> str:
-    out = text
+def patched(text: str):
+    """(patched text, whether an anchor had to be found ignoring whitespace)."""
+    out, healed = text, False
     for anchor, body in INSERTIONS:
         count = out.count(anchor)
-        if count != 1:
+        if count == 1:
+            out = out.replace(anchor, anchor + BEGIN + "\n" + body + END + "\n", 1)
+            continue
+        # Same lines with different spacing, found once: insert after them.
+        tl = heal.lines(out)
+        nt = [heal.norm(l) for l in tl]
+        for a, b in heal._block_spans(out, TAG):
+            for i in range(a, min(b, len(nt))):
+                nt[i] = "\0"
+        start = heal._find_normalized(tl, nt, [heal.norm(l) for l in heal.lines(anchor)])
+        if start is None:
             short = anchor.strip().splitlines()[0]
             raise ValueError(f"anchor found {count} times: {short!r} (Caelestia changed; plugin needs updating)")
-        out = out.replace(anchor, anchor + BEGIN + "\n" + body + END + "\n", 1)
-    return out
+        end = start + len(heal.lines(anchor))
+        out = "".join(tl[:end]) + BEGIN + "\n" + body + END + "\n" + "".join(tl[end:])
+        healed = True
+    if healed and not heal.parses(out):
+        raise ValueError("could not adapt to this Caelestia safely (the result does not parse)")
+    return out, healed
 
 
 def write_atomic(path: str, text: str) -> None:
@@ -134,10 +155,11 @@ def write_atomic(path: str, text: str) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) != 3 or sys.argv[1] not in ("apply", "revert", "status"):
+    if len(sys.argv) != 3 or sys.argv[1] not in ("apply", "revert", "status", "watchdog"):
         print(__doc__.strip())
         return 2
     action, shell_dir = sys.argv[1], sys.argv[2]
+    heal.hold_shell_lock()  # other plugins patch at the same moment
     path = target(shell_dir)
     try:
         with open(path, encoding="utf-8") as f:
@@ -145,6 +167,17 @@ def main() -> int:
     except OSError as e:
         print(f"FAILED: cannot read {path}: {e}")
         return 1
+
+    def write_stock():
+        with open(path, encoding="utf-8") as f:
+            now = f.read()
+        if strip(now) != now:
+            write_atomic(path, strip(now))
+
+    guard = heal.Guard(TAG, os.path.abspath(__file__), shell_dir, "Focus-aware Fullscreen")
+    if action == "watchdog":
+        print(guard.watchdog(write_stock))
+        return 0
 
     has_current = BEGIN in text
     has_any = BLOCK_RE.search(text) is not None
@@ -174,12 +207,19 @@ def main() -> int:
             print("NOT_NEEDED")
         return 0
     try:
-        want = patched(clean)
+        want, healed = patched(clean)
+        healed = [REL] if healed else []
+        if guard.refused({REL: clean}, healed):
+            raise ValueError("adapting to this Caelestia failed before, so it stays off until a plugin update")
     except ValueError as e:
         # Leave whatever is there untouched rather than half-patch the shell.
         print(f"FAILED: {e}")
         return 1
     if want == text:
+        failed = guard.check(write_stock)
+        if failed:
+            print(failed)
+            return 1
         print("OK")
         return 0
     write_atomic(path, want)
@@ -187,6 +227,8 @@ def main() -> int:
         if f.read() != want:
             print("FAILED: write did not stick")
             return 1
+    # Watch the file just patched: if Caelestia doesn't come back right, undo.
+    guard.record({REL: clean}, [REL])
     print("PATCHED")
     return 0
 

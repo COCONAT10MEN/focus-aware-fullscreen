@@ -33,6 +33,8 @@ Scope {
             console.warn("[focus-aware-fullscreen] " + result);
             Toaster.toast(qsTr("Focus-aware fullscreen"), qsTr("Caelestia changed in its last update, so this is off for now. Checking for a fix..."), "warning");
             updater.checkNow();
+            if (result.startsWith("FAILED+RELOAD"))
+                root.restartShell();
         }
     }
 
