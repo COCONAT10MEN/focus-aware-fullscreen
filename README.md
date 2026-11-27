@@ -27,6 +27,12 @@ even though the window you are using is not fullscreen.
 Good news: Caelestia 2.7.6 fixed this itself. On 2.7.6 and newer the plugin notices and stays
 out of the way, so you can keep it installed or remove it, either is fine.
 
+![Alt+Tab from a fullscreen video to a normal window: the bar comes back](assets/media/fullscreen.webp)
+
+A fullscreen video in the background, then Alt+Tab to a normal window. The bar comes back, and
+hides again when you go back to the video. (Recorded on 2.7.6, which does this on its own now.
+On 2.7.5 this is what the plugin gives you.)
+
 ## Installation
 
 **Requirements:** Caelestia KDE (tested on 2.7.5 and 2.7.6), `python3`
